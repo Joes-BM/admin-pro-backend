@@ -39,20 +39,66 @@ const crearHospital = async(req,res=response)=>{
     }
 }
 
-const actualizarHospital = (req,res)=>{
+const actualizarHospital = async(req,res=response)=>{
+    const id=req.params.id;
+    const uid=req.uid;
 
-    res.json({
-        ok:true,
-        msg:'actualizarHospital'
-    })
+    try {
+        const hospital = await Hospital.findById(id);
+        if (!hospital){
+            return res.status(403).json({
+                ok:false,
+                msg:'hospital no encontrado por Id'
+            })
+        }
+        //* UNA FORMA DE GUARDAR EL NOMBRE - forma valida si solo es un solo campo
+        // hospital.nombre= req.body.nombre;
+
+        //* SEGUNDA FORMA
+        const cambiosHospital={
+            ...req.body,
+            usuario:uid
+        }
+        const hospitalActualizado = await Hospital.findByIdAndUpdate(id,cambiosHospital, {new:true});
+        
+        res.json({
+            ok:true,
+            hospital:hospitalActualizado
+        })
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            ok:false,
+            msg:'hable con el administrador'
+        })    
+    }
 }
 
-const eliminarHospital = (req,res)=>{
+const eliminarHospital = async(req,res=response)=>{
+    const id=req.params.id;
+    try {
+        const hospital = await Hospital.findById(id);
+        if (!hospital){
+            return res.status(403).json({
+                ok:false,
+                msg:'hospital no encontrado por Id'
+            })
+        }
+        await Hospital.findByIdAndDelete(id);
+        res.json({
+            ok:true,
+            msg:'Hospital Eliminado'
+        })
 
-    res.json({
-        ok:true,
-        msg:'eliminarHospital'
-    })
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            ok:false,
+            msg:'comuniquese con el Administrador'
+        })
+    }
+
 }
 
 module.exports =  {
