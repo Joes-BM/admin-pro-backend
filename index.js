@@ -11,6 +11,9 @@ const app=express();
 //CONFIGURAR CORS
 app.use(cors());
 
+//
+app.use(express.static('public'));
+
 // ! lectura  y parseo del body [antes de las rutas]
 app.use(express.json());
 
